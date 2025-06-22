@@ -1,0 +1,60 @@
+name: Java 测试工作流
+
+on:
+  # 当推送到 master 分支或创建针对 master 的拉取请求时触发
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  # 也可以手动触发工作流
+  workflow_dispatch:
+
+jobs:
+  test:
+    # 使用最新的 Ubuntu 环境
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 检出代码到运行环境
+    - name: 检出代码
+      uses: actions/checkout@v3
+      
+    # 设置 Java 环境，使用 Eclipse Temurin (OpenJDK)
+    - name: 设置 JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        # 启用 Maven 缓存以加速构建
+        cache: maven
+    
+    # 运行测试
+    - name: 运行测试
+      run: mvn test -B
+    
+    # 生成测试报告（如果需要）
+    - name: 生成测试报告
+      if: success()
+      run: |
+        mkdir -p test-reports
+        cp target/surefire-reports/*.xml test-reports/
+      shell: bash
+      
+    # 上传测试报告到 GitHub 作为工作流附件
+    - name: 上传测试报告
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-reports
+        path: test-reports/
+        # 生成代码覆盖率报告（需要在 pom.xml 中配置 Jacoco）
+    - name: 生成代码覆盖率报告
+      run: mvn jacoco:report
+      
+    # 上传代码覆盖率到 Codecov
+    - name: 上传覆盖率到 Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+      env:
+        CODECOV_FLAGS: "-R ."
