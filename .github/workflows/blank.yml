@@ -1,28 +1,13 @@
-name: Java CI (仅流程演示)
+name: CI Demo
 
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
     - name: 检出代码
       uses: actions/checkout@v4
       
-    - name: 设置 JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-    
-    - name: 执行空操作
-      run: |
-        echo "这是一个演示工作流，不执行实际测试"
-        echo "流程成功通过!"
-      shell: bash
+    - name: 完成
+      run: echo "CI流程成功通过！"
