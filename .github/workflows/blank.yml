@@ -1,4 +1,4 @@
-name: CI with Email Notification
+name: CI Demo
 
 on: [push, pull_request]
 
@@ -6,33 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+    - name: 检出代码
+      uses: actions/checkout@v4
       
-      - name: 执行成功操作
-        run: echo "CI流程成功通过！"
-      
-      - name: 发送成功邮件
-        uses: dawidd6/action-send-mail@v3
-        if: success()  # 仅在成功时发送
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ✅ CI流程成功通知
-          body: |
-            🎉 所有任务已成功完成！
-            
-            **状态**: 全部通过
-            触发事件: ${{ github.event_name }}
-            提交SHA: ${{ github.sha }}
-            提交者: ${{ github.actor }}
-            
-            查看详情: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            
-            此致，
-            GitHub Actions Bot
-          to: recipient@example.com
-          from: GitHub Actions
-          secure: true
+    - name: 完成
+      run: echo "CI流程成功通过！"
